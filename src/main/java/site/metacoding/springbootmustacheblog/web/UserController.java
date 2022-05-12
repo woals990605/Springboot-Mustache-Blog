@@ -127,8 +127,8 @@ public class UserController {
     }
 
     // 유저 수정 페이지 - 인증(로그인) O
-    @GetMapping("/user/{id}/updateForm")
-    public String updateForm(@PathVariable int id) {
+    @GetMapping("/user/updateForm")
+    public String updateForm() {
         return "user/updateForm";
     }
 
