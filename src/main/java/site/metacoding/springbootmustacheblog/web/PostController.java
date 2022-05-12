@@ -59,9 +59,10 @@ public class PostController {
     public String detail(@PathVariable Integer id, Model model) { // int는 null이 없음, 초기값이 0
         // Integer는 초기값이 null
 
+        // 박스에 담기 null 방지
         Optional<Post> postOp = postRepository.findById(id); // 유저정보
 
-        // 핵심 로직
+        // 핵심 로직 : 박스가 null인지 확인 => 나중에 try catch로 바꾸기
         if (postOp.isPresent()) { // 박스안에 뭐가 있으면
             Post postEntity = postOp.get();
             model.addAttribute("post", postEntity);

@@ -29,6 +29,10 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     # StackTrace에 쿼리 보여주기
     show-sql: true
+    # StackTrace에 쿼리 예쁘게 정렬해서 보여주기
+    properties:
+      hibernate.format_sql: true
+
 
 # StackTrace에 색을 입혀 보기 좋게 바꿔주는 코드
   output:
