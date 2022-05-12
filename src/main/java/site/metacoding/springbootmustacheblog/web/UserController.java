@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import site.metacoding.springbootmustacheblog.domain.user.User;
 import site.metacoding.springbootmustacheblog.domain.user.UserRepository;
+import site.metacoding.springbootmustacheblog.web.dto.ResponseDto;
 
 @Controller
 public class UserController {
@@ -28,6 +30,26 @@ public class UserController {
     public UserController(UserRepository userRepository, HttpSession session) {
         this.userRepository = userRepository;
         this.session = session;
+    }
+
+    // DB에 username 확인
+    // user의 username이 동일한지 확인해줄래? - 응답은 무조건 json
+    // 부득이하게 예외적으로 동사사용할 때도 있음
+    // get만으로 동사가 부족하기 때문
+    // http://localhost:8080/api/user/username/same-check?username=s
+    @GetMapping("/api/user/username/same-check")
+    public @ResponseBody ResponseDto<String> sameCheck(String username) {
+
+        // 1. SELECT * FROM user WHERE username = "ssar";
+        User userEntity = userRepository.mUsernameSameCheck(username);
+
+        // 2. userEntity가 있으면? 없으면?
+        if (userEntity == null) {
+            return new ResponseDto<String>(1, "통신성공", "없어");
+        } else {
+            return new ResponseDto<String>(1, "통신성공", "있어");
+        }
+
     }
 
     // 회원가입 페이지 (정적) - 인증(로그인) X

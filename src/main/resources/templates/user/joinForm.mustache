@@ -7,7 +7,7 @@
     <!-- 회원가입 폼 시작 -->
     <form action="/join" method="post">
         <div class="mb-3 mt-3">
-            <input type="text" class="form-control" placeholder="Enter username" name="username" required>
+            <input type="text" class="form-control" placeholder="Enter username" name="username" id="username" required>
         </div>
         <div class="mb-3">
             <input type="password" class="form-control" placeholder="Enter password" name="password" required>
@@ -22,5 +22,22 @@
 
 </div>
 <!-- 컨테이너 끝 -->
+
+<script>
+    async function usernameSameCheck(username) {
+        // 같은 도메인 안에 있으니까 @CrossOrigin 붙일 필요 없음
+        let response = await fetch(`/api/user/username/same-check?username=${username}`);
+        let responseJson = await response.json();
+        console.log(responseJson.data);
+        if (responseJson.data === "있어") {
+            alert("중복된 아이디입니다.");
+            $("#username").val("");
+        }
+    }
+    $("#username").keyup((event) => {
+        // console.log(event.target.value);
+        usernameSameCheck(event.target.value);
+    });
+</script>
 
 {{> /layout/footer}}
