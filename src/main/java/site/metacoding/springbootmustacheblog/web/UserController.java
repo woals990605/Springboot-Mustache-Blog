@@ -67,11 +67,14 @@ public class UserController {
     @GetMapping("/loginForm") // 브라우저가 쿠키를 가지고있으면 자동 전송함, 브라우저만!
     public String loginForm(HttpServletRequest request, Model model) {
         // request.getHeader("Cookie");
-        Cookie[] cookies = request.getCookies(); // 파싱해서 배열로 리턴해줌 jSessionId, remember 두개가 있음
-        for (Cookie cookie : cookies) {
-            System.out.println("쿠키값 : " + cookie.getName());
-            if (cookie.getName().equals("remember")) { // getName 키
-                model.addAttribute("remember", cookie.getValue()); // getValue 값
+
+        if (request.getCookies() != null) {
+            Cookie[] cookies = request.getCookies(); // 파싱해서 배열로 리턴해줌 jSessionId, remember 두개가 있음
+            for (Cookie cookie : cookies) {
+                System.out.println("쿠키값 : " + cookie.getName());
+                if (cookie.getName().equals("remember")) { // getName 키
+                    model.addAttribute("remember", cookie.getValue()); // getValue 값
+                }
             }
         }
         return "user/loginForm";
