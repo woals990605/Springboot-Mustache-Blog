@@ -1,0 +1,33 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: utf-8
+
+# DB에 연결하는 코드
+spring:
+  datasource:
+      url: jdbc:mariadb://localhost:3306/greendb
+      driver-class-name: org.mariadb.jdbc.Driver
+      username: green
+      password: green1234
+
+# hibernate는 SQL을 직접 사용하지 않고 메서드만으로 쿼리를 사용할 수 있게 해주는 라이브러리
+# hibernate 기술을 쉽게 사용하게 해주는 라이브러리가 JPA
+# ddl-auto: create는 서버 실행할 때마다 테이블을 삭제하고 새로 만드는 설정
+# ddl-auto: none은 서버 실행할 때마다 아무것도 하지 않는 옵션
+# ddl-auto: update는 필드 수정시에 필요한 옵션
+  jpa:
+    hibernate:
+      ddl-auto: create
+      # 모델에서 설정한 이름대로 컬럼명 설정
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    # StackTrace에 쿼리 보여주기
+    show-sql: true
+
+# StackTrace에 색을 입혀 보기 좋게 바꿔주는 코드
+  output:
+    ansi:
+      enabled: always
