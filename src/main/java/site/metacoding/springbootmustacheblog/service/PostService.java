@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +23,7 @@ public class PostService {
     public Page<Post> 글목록보기(Integer page) {
         // 1. postRepository의 findAll() 호출
         // posts = postRepository.findAll(Sort.by(Sort.Direction.DESC, "id")); // sort
-        PageRequest pq = PageRequest.of(page, 3); // 페이지대로 3개씩 알아서 넘어가준다
+        PageRequest pq = PageRequest.of(page, 3, Sort.by(Direction.DESC, "id")); // 페이지대로 3개씩 알아서 넘어가준다
         return postRepository.findAll(pq);
     }
 
