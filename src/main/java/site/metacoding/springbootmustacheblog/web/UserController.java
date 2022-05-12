@@ -1,9 +1,12 @@
 package site.metacoding.springbootmustacheblog.web;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +20,12 @@ public class UserController {
 
     // 컴포지션(의존성 연결) : 컨트롤러는 레파지토리에 의존해야해!
     private UserRepository userRepository;
+    private HttpSession session;
 
     // DI 받는 코드!!
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, HttpSession session) {
         this.userRepository = userRepository;
+        this.session = session;
     }
 
     // 회원가입 페이지 (정적) - 인증(로그인) X
@@ -53,7 +58,8 @@ public class UserController {
     // 로그인 - 인증(로그인) X
     @PostMapping("/login")
     public String login(HttpServletRequest request, User user) {
-        HttpSession session = request.getSession(); // 쿠키에 JSESSIONID를 85로 가져오면 session의 자기 공간을 가리킴
+        // HttpSession session = request.getSession(); // 쿠키에 JSESSIONID를 85로 가져오면
+        // session의 자기 공간을 가리킴
 
         // 1. DB연결해서 username, password 있는지 확인
         User userEntity = userRepository.mLogin(user.getUsername(), user.getPassword());
@@ -69,10 +75,38 @@ public class UserController {
         return "redirect:/";
     }
 
+    // http://localhost:8080/user/1
     // 유저 상세 페이지 (동적 -> DB연동 필요) - 인증(로그인) O
     @GetMapping("/user/{id}")
-    public String detail(@PathVariable int id) {
-        return "user/detail";
+    public String detail(@PathVariable int id, Model model) {
+
+        // 유효성 검사 하기(수십개... 엄청 많겠지?)
+        User principal = (User) session.getAttribute("principal");
+
+        // 1. 인증 체크 (로그인하지 않고 주소로 접근 막기)
+        if (principal == null) {
+            return "error/page1";
+        }
+
+        // 2. 권한 체크
+        if (principal.getId() != id) {
+            return "error/page1";
+        }
+
+        Optional<User> userOp = userRepository.findById(id); // 유저정보
+
+        // 3. 핵심 로직
+        if (userOp.isPresent()) { // 박스안에 뭐가 있으면
+            User userEntity = userOp.get();
+            model.addAttribute("user", userEntity);
+            return "user/detail";
+        } else { // 없으면 == isEmpty
+            // 누군가 고의로 DELETE 하지 않는 이상 거의 타지 않는 오류
+            return "error/page1";
+        }
+
+        // DB에 로그 남기기 (로그인 한 아이디도 남기기)
+        // Heidi SQL에서도 남겨야해 근데 디비는 알아서 로그가 남음
     }
 
     // 유저 수정 페이지 - 인증(로그인) O
