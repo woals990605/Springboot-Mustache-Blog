@@ -6,24 +6,49 @@
 
     <!-- 글 상세정보보기 시작 -->
 
+    <input type="hidden" id="id" value="{{post.id}}">
     <div class="mb-3 mt-3">
         작성자 : {{post.user.username}}
         <!--실제로는 request영역에서 가져오는 것-->
     </div>
     <div class="mb-3 mt-3">
-        {{post.title}}
+        <h1> {{post.title}} </h1>
         <!--실제로는 request영역에서 가져오는 것-->
     </div>
+    <hr />
     <div class="mb-3">
         {{post.content}}
     </div>
 
     <!-- a태그여도 버튼처럼 생겨있다, btn btn-dark 클래스를 걸어줘서! -->
-    <a href="/s/post/{{post.id}}/updateForm" class="btn btn-dark">수정 페이지이동</a>
+    <a href="/s/post/{{post.id}}/updateForm" class="btn btn-secondary">수정</a>
+    <button class="btn btn-danger" id="btn-delete">삭제</button>
 
     <!-- 글 상세정보보기 끝 -->
 
 </div>
 <!-- 컨테이너 끝 -->
+
+<script>
+    async function deleteById() {
+        let id = $("#id").val();
+        // 무조건 서버는 json 응답! 생긴건 json 모양이지만 결국 통신은 문자열
+        let response = await fetch("/s/post/" + id, {
+            method: "DELETE"
+        });
+        let responseObject = await response.json();
+        if (responseObject.code == 1) { // 통신 성공
+            alert("삭제 성공");
+            location.href = "/";
+        } else { // 통신 실패 code = -1
+            alert("삭제 실패");
+            console.log("삭제 실패 : " + responseObject.msg);
+        }
+    }
+    $("#btn-delete").click((event) => {
+        // DELETE:/post/{id}
+        deleteById();
+    });
+</script>
 
 {{> /layout/footer}}
