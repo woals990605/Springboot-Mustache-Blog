@@ -2,7 +2,9 @@ package site.metacoding.springbootmustacheblog.web;
 
 import java.util.Optional;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -63,7 +65,14 @@ public class UserController {
 
     // 로그인 페이지 (정적) - 인증(로그인) X
     @GetMapping("/loginForm")
-    public String loginForm() {
+    public String loginForm(HttpServletRequest request, Model model) {
+        // request.getHeader("Cookie");
+        Cookie[] cookies = request.getCookies(); // 파싱해서 배열로 리턴해줌
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("remember")) { // getName 키
+                model.addAttribute("remember", cookie.getValue()); // getValue 값
+            }
+        }
         return "user/loginForm";
     }
 
@@ -74,7 +83,7 @@ public class UserController {
     // 이유 : 주소에 패스워드를 남길 수 없으니까!! 보안을 위해!!
     // 로그인 - 인증(로그인) X
     @PostMapping("/login")
-    public String login(HttpServletRequest request, User user) {
+    public String login(User user, HttpServletResponse response) {
         // HttpSession session = request.getSession(); // 쿠키에 JSESSIONID를 85로 가져오면
         // session의 자기 공간을 가리킴
 
@@ -88,6 +97,13 @@ public class UserController {
             System.out.println("로그인 되었습니다.");
             // 세션에 옮겨담자, request는 사라졌지만 세션영역에 보관
             session.setAttribute("principal", userEntity); // principal 인증된 주체 -> 로그인
+
+            if (user.getRemember().equals("on")) {
+                // F12 Application Cookies 프로토콜이라서 저장한거임!! redirection과 상관 없음 ! 브라우저가 저장시킨다
+                response.setHeader("Set-Cookie", "remember=" + userEntity.getUsername()); // 프로토콜에 없는 http 헤더 키값 만들어낸것
+                // response.setHeader("hello", "안녕");
+                // F12 Network Header responseheader에 남는데 얘는 redirect되어서 request 사라짐
+            }
         }
         return "redirect:/";
     }

@@ -8,6 +8,7 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -51,4 +52,9 @@ public class User {
     private LocalDateTime createDate; // 회원가입 날짜
     @LastModifiedDate // insert, update 때 동작
     private LocalDateTime updateDate; // 업데이트 된 날짜
+
+    //////////////////////////////////////////////////////////////////// DB 테이블과
+    //////////////////////////////////////////////////////////////////// 상관없음
+    @Transient // 데이터베이스에 컬럼 만들지마!
+    private String remember; // 이렇게 하면 테이블만들어짐, 필요없는데
 }
