@@ -38,7 +38,24 @@ public class UserController {
     // 회원가입 INSERT - 인증(로그인) X
     @PostMapping("/join")
     public String join(User user) { // 행위, 페이지 아님
+
+        // 1. username, password, email null 체크 required 속성 걸기(프론트 검사) -> 백엔드 검사
+        // username=ssar&email=ssar@nate.com 키 자체가 안들어오는게 null -> password null
+        // username=ssar&password=&email=ssar@nate.com 패스워드 null
+        // null 체크 -> 공백 체크 (순서 중요)
+        if (user.getUsername() == null || user.getPassword() == null || user.getEmail() == null) {
+            // 통신하다보면 물리적인 일이 날 수 있음 패킷이 유실되거나
+            return "redirect:/joinForm"; // -> 새로고침하면 적은 데이터 다날아감, 뒤로가기 해줘야해(자바스크립트로)
+        }
+
+        if (user.getUsername().equals("") || user.getPassword().equals("") || user.getEmail().equals("")) {
+            // 통신하다보면 물리적인 일이 날 수 있음 패킷이 유실되거나
+            return "redirect:/joinForm";
+        }
+
         System.out.println("user : " + user);
+
+        // 2. 핵심로직
         User userEntity = userRepository.save(user);
         System.out.println("userEntity : " + userEntity);
         return "redirect:/loginForm"; // 로그인페이지 이동해주는 컨트롤러 메서드를 재활용

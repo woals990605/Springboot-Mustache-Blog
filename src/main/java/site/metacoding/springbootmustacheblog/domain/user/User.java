@@ -41,7 +41,7 @@ public class User {
     private String password;
 
     // varchar의 크기를 벗어나는 length를 넣으면 알아서 longtext타입으로 바뀐다!
-    @Column(length = 16000000)
+    @Column(length = 16000000, nullable = false)
     private String email;
 
     // 시간 -> DB는 LocalDateTime 타입이 없으니까 알아서 datetime 타입으로 바뀜!
