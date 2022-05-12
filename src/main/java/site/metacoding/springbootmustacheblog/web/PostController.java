@@ -1,5 +1,8 @@
 package site.metacoding.springbootmustacheblog.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -36,10 +39,15 @@ public class PostController {
     // 메인 페이지 - 인증 X
     // GET 글 목록 페이지 /post/list/
     @GetMapping({ "/", "post/list" }) // { "/", "post/list" }로 쓰면 두 가지 방법으로 들어올 수 있음
-    public String list(Model model) {
+    public String list(Model model, Post post) {
+
+        List<Post> posts = new ArrayList<>();
 
         // 1. postRepository의 findAll() 호출
+        posts = postRepository.findAll();
+
         // 2. model에 담기
+        model.addAttribute("posts", posts);
         // 3. mustache 파일에 뿌리기
 
         return "post/list";

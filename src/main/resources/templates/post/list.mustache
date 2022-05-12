@@ -6,13 +6,15 @@
     <!-- container, mt-3은 css 클래스임!! -->
 
     <!-- 게시글 아이템 시작 -->
+    {{#posts}}
     <div class="card mb-3">
         <div class="card-body">
-            <h4 class="card-title">제목입니다.</h4>
-            <a href="/post/1" class="btn btn-dark">상세보기</a>
+            <h4 class="card-title">{{title}}</h4>
+            <a href="/post/{{id}}" class="btn btn-dark">상세보기</a>
             <!--나중에 동적으로 id 바꿔줘야함!!!-->
         </div>
     </div>
+    {{/posts}}
     <!-- 게시글 아이템 끝 -->
 
     <!-- 페이지 시작 -->
