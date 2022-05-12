@@ -58,14 +58,29 @@ public class PostController {
     public String detail(@PathVariable Integer id, Model model) { // int는 null이 없음, 초기값이 0
         // Integer는 초기값이 null
 
-        Post postEntity = postService.글상세보기(id); // EAGER니까 user 가지고있음
+        User principal = (User) session.getAttribute("principal");
 
+        // 권한
+        Post postEntity = postService.글상세보기(id); // 재활용, EAGER니까 user 가지고있음
+
+        // 게시물이 없으면 error 페이지 이동
         if (postEntity == null) {
             return "error/page1";
-        } else {
-            model.addAttribute("post", postEntity);
-            return "post/detail";
         }
+        // 로그인 안했을때 터짐 null.getId했던것
+        if (principal != null) {
+            // 권한 확인해서 view로 값 넘김
+            if (principal.getId() == postEntity.getUser().getId()) { // 권한이 있다는 뜻
+                model.addAttribute("pageOwner", true);
+            } else {
+                model.addAttribute("pageOwner", false);
+            }
+
+        }
+
+        model.addAttribute("post", postEntity);
+        return "post/detail";
+
     }
 
     // 글 수정 페이지 /post/{id}/updateForm - 인증 O
