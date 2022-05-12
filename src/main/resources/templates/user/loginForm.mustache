@@ -15,7 +15,8 @@
         <!-- 쿠키 - 세션 -->
         <div class="form-check mb-3">
             <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" name="remember"> Remember me
+                <input class="form-check-input" type="checkbox" name="remember"
+                    value="{{#remember}}{{remember}}{{/remember}}">
             </label>
         </div>
         <button type="submit" class="btn btn-dark">로그인</button>

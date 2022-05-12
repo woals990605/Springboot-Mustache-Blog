@@ -64,11 +64,12 @@ public class UserController {
     }
 
     // 로그인 페이지 (정적) - 인증(로그인) X
-    @GetMapping("/loginForm")
+    @GetMapping("/loginForm") // 브라우저가 쿠키를 가지고있으면 자동 전송함, 브라우저만!
     public String loginForm(HttpServletRequest request, Model model) {
         // request.getHeader("Cookie");
-        Cookie[] cookies = request.getCookies(); // 파싱해서 배열로 리턴해줌
+        Cookie[] cookies = request.getCookies(); // 파싱해서 배열로 리턴해줌 jSessionId, remember 두개가 있음
         for (Cookie cookie : cookies) {
+            System.out.println("쿠키값 : " + cookie.getName());
             if (cookie.getName().equals("remember")) { // getName 키
                 model.addAttribute("remember", cookie.getValue()); // getValue 값
             }
@@ -98,9 +99,13 @@ public class UserController {
             // 세션에 옮겨담자, request는 사라졌지만 세션영역에 보관
             session.setAttribute("principal", userEntity); // principal 인증된 주체 -> 로그인
 
-            if (user.getRemember().equals("on")) {
+            if (user.getRemember() != null && user.getRemember().equals("on")) {
                 // F12 Application Cookies 프로토콜이라서 저장한거임!! redirection과 상관 없음 ! 브라우저가 저장시킨다
-                response.setHeader("Set-Cookie", "remember=" + userEntity.getUsername()); // 프로토콜에 없는 http 헤더 키값 만들어낸것
+                response.addHeader("Set-Cookie", "remember=" + userEntity.getUsername()); // 프로토콜에 없는 http 헤더 키값 만들어낸것
+
+                // response.addHeader("Set-Cookie", "hi=hihihihi;"); // 프로토콜에 없는 http 헤더 키값
+                // 만들어낸것
+                // response.addCookie(cookie); // 프로토콜에 없는 http 헤더 키값 만들어낸것
                 // response.setHeader("hello", "안녕");
                 // F12 Network Header responseheader에 남는데 얘는 redirect되어서 request 사라짐
             }
