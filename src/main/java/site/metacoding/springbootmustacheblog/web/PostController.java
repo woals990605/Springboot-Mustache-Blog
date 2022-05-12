@@ -1,12 +1,10 @@
 package site.metacoding.springbootmustacheblog.web;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.springbootmustacheblog.domain.post.Post;
@@ -41,19 +40,34 @@ public class PostController {
     // 메인 페이지 - 인증 X
     // GET 글 목록 페이지 /post/list/
     @GetMapping({ "/", "post/list" }) // { "/", "post/list" }로 쓰면 두 가지 방법으로 들어올 수 있음
-    public String list(Model model, Post post) {
-
-        List<Post> posts = new ArrayList<>();
+    public String list(@RequestParam(defaultValue = "0") Integer page, Model model) {
 
         // 1. postRepository의 findAll() 호출
-        posts = postRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        // posts = postRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        PageRequest pq = PageRequest.of(page, 3); // 페이지대로 3개씩 알아서 넘어가준다
 
         // 2. model에 담기
-        model.addAttribute("posts", posts);
+        model.addAttribute("posts", postRepository.findAll(pq)); // paging
+        model.addAttribute("nextPage", page + 1);
+        model.addAttribute("previewPage", page - 1);
         // 3. mustache 파일에 뿌리기
 
         return "post/list";
     }
+
+    // 페이징 결과 데이터 확인 test
+    // @GetMapping("test/post/list")
+    // public @ResponseBody Page<Post> listTest(@RequestParam(defaultValue = "0")
+    // Integer page) {
+
+    // // @RequestParam(defaultValue = "0")과 같은 것
+    // // if(page == null) {
+    // // page = 0;
+    // // }
+
+    // PageRequest pq = PageRequest.of(page, 3);
+    // return postRepository.findAll(pq);
+    // }
 
     // 글 상세보기 페이지 /post/{id} (삭제버튼 만들어두면 되니까 삭제페이지 필요 X)
     @GetMapping("/post/{id}") // Get요청에 /post 제외시키기(인증 X)
