@@ -1,0 +1,55 @@
+{{> /layout/header}}
+
+<!-- 컨테이너 시작 -->
+<div class="container mt-3">
+    <!-- container, mt-3은 css 클래스임!! -->
+
+    <!-- 글쓰기 수정 폼 시작 -->
+    <form>
+        <input type="hidden" id="id" value="{{post.id}}">
+        <div class="mb-3 mt-3">
+            <input type="text" class="form-control" placeholder="Enter title" id="title" value="{{post.title}}">
+        </div>
+        <div class="mb-3">
+            <textarea class="form-control" id="content" rows="10">{{post.content}}</textarea>
+        </div>
+
+        <button type="button" class="btn btn-secondary" id="btn-update">글쓰기 수정완료</button>
+        <!-- 글쓰기 수정 폼 끝 -->
+    </form>
+</div>
+<!-- 컨테이너 끝 -->
+
+<script>
+    async function update() {
+        let post = {
+            title: $("#title").val(),
+            content: $("#content").val()
+        }
+        console.log("title : " + post.title);
+        console.log("content : " + post.content);
+        let postJson = JSON.stringify(post);
+        console.log("postJson : " + postJson);
+
+        let id = $("#id").val();
+        let response = await fetch("/s/post/" + id, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            method: 'PUT',
+            body: postJson
+        });
+        console.log("response : " + response);
+        let responseObject = await response.json();
+        console.log("responseObject.code : " + responseObject.code);
+        if (responseObject.code == 1) {
+            alert("수정이 정상적으로 완료되었습니다.")
+            location.href = "/post/" + id;
+        }
+    }
+    $("#btn-update").click((event) => {
+        update();
+    });
+</script>
+
+{{> /layout/footer}}

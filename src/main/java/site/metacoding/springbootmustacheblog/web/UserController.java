@@ -196,7 +196,7 @@ public class UserController {
 
         // 2. 권한 체크
         if (principal.getId() != id) {
-            return new ResponseDto<String>(-1, "권한없음", null);
+            return new ResponseDto<String>(-1, "권한없음", null); // http 상태코드 403 함께 리턴
         }
 
         User userEntity = userService.유저수정(id, user); // 세션에는 아직도 원래 비밀번호, 이메일로 저장되어있음 -> 변경해주자
