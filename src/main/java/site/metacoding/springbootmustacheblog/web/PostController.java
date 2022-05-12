@@ -2,6 +2,7 @@ package site.metacoding.springbootmustacheblog.web;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -55,9 +56,20 @@ public class PostController {
 
     // 글 상세보기 페이지 /post/{id} (삭제버튼 만들어두면 되니까 삭제페이지 필요 X)
     @GetMapping("/post/{id}") // Get요청에 /post 제외시키기(인증 X)
-    public String detail(@PathVariable Integer id) { // int는 null이 없음, 초기값이 0
-                                                     // Integer는 초기값이 null
-        return "post/" + id;
+    public String detail(@PathVariable Integer id, Model model) { // int는 null이 없음, 초기값이 0
+        // Integer는 초기값이 null
+
+        Optional<Post> postOp = postRepository.findById(id); // 유저정보
+
+        // 핵심 로직
+        if (postOp.isPresent()) { // 박스안에 뭐가 있으면
+            Post postEntity = postOp.get();
+            model.addAttribute("post", postEntity);
+            return "post/detail";
+        } else { // 없으면 == isEmpty
+            // 누군가 고의로 DELETE 하지 않는 이상 거의 타지 않는 오류
+            return "error/page1";
+        }
     }
 
     // 글 수정 페이지 /post/{id}/updateForm - 인증 O
