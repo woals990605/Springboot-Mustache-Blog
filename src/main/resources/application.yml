@@ -22,8 +22,9 @@ spring:
 # ddl-auto: none은 서버 실행할 때마다 아무것도 하지 않는 옵션
 # ddl-auto: update는 필드 수정시에 필요한 옵션
   jpa:
+    open-in-view: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       # 모델에서 설정한 이름대로 컬럼명 설정
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

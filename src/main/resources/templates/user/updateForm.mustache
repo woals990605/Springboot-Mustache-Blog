@@ -7,6 +7,7 @@
     <!-- 회원수정 폼 시작 -->
     <!-- 폼 태그는 put, delete 요청을 할 수 없다. 그래서 자바스크립트로 제어해야 한다. -->
     <form>
+        <input type="hidden" id="id" value="{{principal.id}}">
         <div class="mb-3 mt-3">
             <input type="text" class="form-control" value="{{principal.username}}" id="username" readonly>
             <!--username readonly-->
@@ -18,7 +19,7 @@
             <input type="email" class="form-control" value="{{principal.email}}" id="email" required>
         </div>
 
-        <button type="button" class="btn btn-dark" onclick="update()">수정완료</button>
+        <button type="button" class="btn btn-dark" id="btnUpdate">수정완료</button>
     </form>
     <!-- 회원수정 폼 끝 -->
 
@@ -27,11 +28,60 @@
 
 <!-- html문서에서 자바스크립트는 여기에 적는다 -->
 <script>
+
     // 클래스 안에 있으면 메서드, 독립적인 것(1급 객체)은 함수
-    function update() {
-        let usernameDom = document.querySelector("#username");
-        console.log(usernameDom);
+    async function update() {
+
+        // 1. jquery로 password, email 찾아서 자바스크립트 오브젝트로 만들기
+        let userUpdate = {
+            password: $("#password").val(),
+            email: $("#email").val()
+        }
+
+        console.log("userUpdate : " + userUpdate);
+
+        // 2. 자바스크립트 오브젝트를 json으로 변환하기
+
+        let userJson = JSON.stringify(userUpdate);
+        console.log("userJson : " + userJson);
+
+        // 다시 자바스크립트 오브젝트로 변환
+        // let userObject = JSON.parse(userJson);
+
+        // 3. fetch 요청하기
+        let id = $("#id").val();
+        let response = await fetch("/s/user/" + id, {
+
+            // (1) content-type을 json으로 설정하기
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            // (2) put 메서드로 변경하기
+            method: 'PUT',
+            // (3) body 데이터 실어 보내기
+            body: userJson
+        });
+
+        console.log("response : " + response);
+
+        let responseObject = await response.json();
+
+        console.log("responseObject.code : " + responseObject.code);
+
+        // (4) ResponseDto로 응답받아서 code가 1이면 alert창으로 수정 성공 띄우기
+        if (responseObject.code == 1) {
+            alert("수정이 정상적으로 완료되었습니다.")
+
+            // (5) 수정 성공 메시지 이후에 / 메인 화면으로 이동하기 - location.href = "/"
+            location.href = "/s/user/" + id;
+        } else {
+            alert("통신에 실패하였습니다. : " + responseObject.msg);
+        }
     }
+
+    $("#btnUpdate").click((event) => {
+        update();
+    })
 </script>
 
 {{> /layout/footer}}

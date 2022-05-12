@@ -1,7 +1,5 @@
 package site.metacoding.springbootmustacheblog.web;
 
-import java.util.Optional;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,11 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.springbootmustacheblog.domain.user.User;
-import site.metacoding.springbootmustacheblog.domain.user.UserRepository;
 import site.metacoding.springbootmustacheblog.service.UserService;
 import site.metacoding.springbootmustacheblog.web.dto.ResponseDto;
 
@@ -175,10 +173,37 @@ public class UserController {
         return "user/updateForm";
     }
 
+    // username(x), password(o), email(o)
+    // password=1234&email=ssar@nate.com (x-www-form-urlencoded)
+    // {"password":"1234", "email":"ssar@nate.com"} (application/json)
+    // json을 받을 것이기 때문에 Spring이 데이터 받을 때 파싱전략 변경!!
+    // Put 요청은 Http Body가 있다. Http Header의 Content-Type에 MIME타입을 알려줘야 한다.
+
+    // @RequestBody -> BufferedReader + JSON 파싱 (자바 오브젝트)
+    // @ResponseBody -> BufferedWriter + JSON 파싱 (자바 오브젝트)
+
     // 유저 수정 - 인증(로그인) O
     @PutMapping("/s/user/{id}")
-    public String update(@PathVariable int id) {
-        return "redirect:/user/" + id;
+    public @ResponseBody ResponseDto<String> update(@PathVariable int id, @RequestBody User user) {
+        // 보안의 문제
+        // 유효성 검사 하기(수십개... 엄청 많겠지?)
+        User principal = (User) session.getAttribute("principal");
+
+        // 1. 인증 체크
+        if (principal == null) {
+            return new ResponseDto<String>(-1, "인증안됨", null);
+        }
+
+        // 2. 권한 체크
+        if (principal.getId() != id) {
+            return new ResponseDto<String>(-1, "권한없음", null);
+        }
+
+        User userEntity = userService.유저수정(id, user); // 세션에는 아직도 원래 비밀번호, 이메일로 저장되어있음 -> 변경해주자
+
+        session.setAttribute("principal", userEntity); // 세션 변경 - 덮어쓰기!!
+
+        return new ResponseDto<String>(1, "통신성공", null);
     }
 
 }

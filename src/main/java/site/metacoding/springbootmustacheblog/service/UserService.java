@@ -57,7 +57,19 @@ public class UserService {
     }
 
     @Transactional
-    public void 유저수정() {
+    public User 유저수정(Integer id, User user) {
+        // 1. 영속화(를 시켜야 변경감지하여 더티체킹 가능)
+        Optional<User> userOp = userRepository.findById(id);
 
-    }
+        if (userOp.isPresent()) { // 영속화 됨
+            User userEntity = userOp.get();
+            userEntity.setPassword(user.getPassword());
+            userEntity.setEmail(user.getEmail());
+
+            return userEntity;
+        }
+
+        return null;
+    } // 2. 트랜잭션 종료 + 영속화 되어있는 것들 전부 더티체킹 (변경감지해서 DB에 flush) -> UPDATE
+
 }
