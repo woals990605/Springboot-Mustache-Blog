@@ -113,9 +113,18 @@ public class UserController {
         return "redirect:/";
     }
 
+    // 로그아웃 - 인증(로그인) O
+    @GetMapping("/logout")
+    public String logout() {
+        session.invalidate(); // 해당 JSESSIONID 영역 전체 날리기 -> 이게 로그아웃
+        // session.removeAttribute("principal"); // 해당 JSESSIONID 영역의 principal 키값만 날아가는
+        // 것
+        return "redirect:/loginForm"; // PostController 만들고 수정하자
+    }
+
     // http://localhost:8080/user/1
     // 유저 상세 페이지 (동적 -> DB연동 필요) - 인증(로그인) O
-    @GetMapping("/user/{id}")
+    @GetMapping("/s/user/{id}")
     public String detail(@PathVariable int id, Model model) {
 
         // 유효성 검사 하기(수십개... 엄청 많겠지?)
@@ -148,23 +157,15 @@ public class UserController {
     }
 
     // 유저 수정 페이지 - 인증(로그인) O
-    @GetMapping("/user/updateForm")
+    @GetMapping("/s/user/updateForm")
     public String updateForm() {
         return "user/updateForm";
     }
 
     // 유저 수정 - 인증(로그인) O
-    @PutMapping("/user/{id}")
+    @PutMapping("/s/user/{id}")
     public String update(@PathVariable int id) {
         return "redirect:/user/" + id;
     }
 
-    // 로그아웃 - 인증(로그인) O
-    @GetMapping("/logout")
-    public String logout() {
-        session.invalidate(); // 해당 JSESSIONID 영역 전체 날리기 -> 이게 로그아웃
-        // session.removeAttribute("principal"); // 해당 JSESSIONID 영역의 principal 키값만 날아가는
-        // 것
-        return "redirect:/loginForm"; // PostController 만들고 수정하자
-    }
 }
